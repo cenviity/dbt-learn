@@ -62,15 +62,16 @@ final as (
 
         customer_orders.first_order_date,
         customer_orders.most_recent_order_date,
-        coalesce(customer_orders.number_of_orders, 0) as number_of_orders,
 
-        customer_lifetime_values.lifetime_value
+        customer_lifetime_values.lifetime_value,
+
+        coalesce(customer_orders.number_of_orders, 0) as number_of_orders
 
     from customers
 
     left join customer_orders
         on customers.customer_id = customer_orders.customer_id
-    
+
     left join customer_lifetime_values
         on customers.customer_id = customer_lifetime_values.customer_id
 
