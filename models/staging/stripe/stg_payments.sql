@@ -8,7 +8,6 @@ payments as (
         paymentmethod as payment_method,
         status,
         created as created_date,
-        _batched_at,
 
         -- Convert from cents to dollars
         amount / 100 as amount
