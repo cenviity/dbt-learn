@@ -1,6 +1,12 @@
 with
 
-payments as (
+source as (
+
+    select * from raw.stripe.payment
+
+),
+
+staged as (
 
     select
         id as payment_id,
@@ -12,8 +18,8 @@ payments as (
         -- Convert from cents to dollars
         amount / 100 as amount
 
-    from raw.stripe.payment
+    from source
 
 )
 
-select * from payments
+select * from staged

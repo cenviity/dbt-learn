@@ -1,6 +1,12 @@
 with
 
-orders as (
+source as (
+
+    select * from raw.jaffle_shop.orders
+
+),
+
+staged as (
 
     select
         id as order_id,
@@ -8,8 +14,8 @@ orders as (
         order_date,
         status
 
-    from raw.jaffle_shop.orders
+    from source
 
 )
 
-select * from orders
+select * from staged
