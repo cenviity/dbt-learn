@@ -5,7 +5,18 @@ sources:
     database: raw
     tables:
       - name: customers
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
       - name: orders
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
         loaded_at_field: _etl_loaded_at
         freshness:
           warn_after:
