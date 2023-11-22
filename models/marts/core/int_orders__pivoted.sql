@@ -1,3 +1,5 @@
+{%- set payment_methods = ['bank_transfer', 'coupon', 'credit_card', 'gift_card'] -%}
+
 with
 
 payments as (
@@ -11,9 +13,7 @@ pivoted as (
     select
         order_id,
 
-        {%- set payment_methods = ['bank_transfer', 'coupon', 'credit_card', 'gift_card'] -%}
-
-        {% for payment_method in payment_methods %}
+        {%- for payment_method in payment_methods %}
 
             sum(
                 case
