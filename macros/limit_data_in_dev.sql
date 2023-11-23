@@ -2,7 +2,7 @@
 
     {% if target.name == 'default' -%}
         
-        where {{ column_name }} >= dateadd('day', - {{ dev_days_of_data }}, current_timestamp)
+        where {{ column_name }} >= dateadd('day', -{{ dev_days_of_data }}, current_timestamp)
 
     {%- endif %}
 
