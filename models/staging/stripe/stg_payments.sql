@@ -16,7 +16,7 @@ staged as (
         created as created_date,
 
         -- Convert from cents to dollars
-        {{ cents_to_dollars('amount') }} as amount
+        {{ cents_to_dollars('amount', 4) }} as amount
 
     from source
 
