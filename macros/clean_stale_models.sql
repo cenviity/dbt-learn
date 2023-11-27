@@ -31,16 +31,16 @@
     {{ log('\nGenerating cleanup queries...\n', info=True) }}
     {% set drop_queries = run_query(get_drop_commands_query).columns[1].values() %}
 
-    {% for query in drop_queries %}
+    {% for drop_query in drop_queries %}
 
-        {% if dry_run %}
+        {% if execute and not dry_run %}
             
-            {{ log(query, info=True) }}
+            {{ log('Dropping object with command: ' ~ drop_query, info=True) }}
+            {% do run_query(drop_query) %}
         
         {% else %}
 
-            {{ log('Dropping object with command: ' ~ query, info=True) }}
-            {% do run_query(query) %}
+            {{ log(drop_query, info=True) }}
 
         {% endif %}
 
