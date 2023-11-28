@@ -18,7 +18,10 @@ successful_payments as (
 
 total_revenue as (
 
-    select sum(amount) from successful_payments
+    select
+        sum(amount)
+    
+    from successful_payments
 
 )
 
