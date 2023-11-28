@@ -9,7 +9,7 @@ payments as (
 successful_payments as (
 
     select *
-    
+
     from payments
 
     where status = 'success'
