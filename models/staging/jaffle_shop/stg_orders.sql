@@ -16,6 +16,8 @@ staged as (
 
     from source
 
+    {{ limit_data_in_dev('order_date', 2100) }}
+
 )
 
 select * from staged
