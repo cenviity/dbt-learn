@@ -6,23 +6,15 @@ payments as (
 
 ),
 
-successful_payments as (
+aggregated as (
 
-    select *
-
+    select
+        sum(amount) as total_revenue
+    
     from payments
 
     where status = 'success'
 
-),
-
-total_revenue as (
-
-    select
-        sum(amount)
-    
-    from successful_payments
-
 )
 
-select * from total_revenue
+select * from aggregated
