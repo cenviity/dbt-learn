@@ -2,21 +2,21 @@ with
 
 -- Import CTEs
 
-base_orders as (
+orders as (
 
-    select * from {{ source('jaffle_shop', 'orders') }}
-
-),
-
-base_customers as (
-
-    select * from {{ source('jaffle_shop', 'customers') }}
+    select * from {{ ref('stg_jaffle_shop__orders') }}
 
 ),
 
-base_payments as (
+customers as (
 
-    select * from {{ source('stripe', 'payment') }}
+    select * from {{ ref('stg_jaffle_shop__customers') }}
+
+),
+
+payments as (
+
+    select * from {{ ref('stg_stripe__payments') }}
 
 ),
 
