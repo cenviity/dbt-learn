@@ -54,15 +54,6 @@ customer_orders as (
             partition by orders.customer_id
         ) as total_lifetime_value,
 
-        sum(
-            nvl2(
-                orders.valid_order_date,
-                orders.order_value_dollars,
-                0
-            )
-        )
-        / sum(nvl2(orders.valid_order_date, 1, 0)) as avg_non_returned_order_value,
-
         array_agg(distinct orders.order_id) over(
             partition by orders.customer_id
         ) as order_ids
@@ -72,7 +63,17 @@ customer_orders as (
     inner join customers
         using (customer_id)
 
-)
+),
+
+add_avg_order_values as (
+
+    select
+        *,
+        total_lifetime_value / non_returned_order_count as avg_non_returned_order_value
+
+    from customer_orders
+
+),
 
 --
 
