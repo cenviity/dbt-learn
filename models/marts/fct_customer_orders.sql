@@ -12,13 +12,77 @@ customers as (
 
 ),
 
-customer_order_history as (
+--
+
+customer_orders as (
 
     select
-        customers.customer_id,
+        orders.*,
         customers.full_name,
         customers.surname,
         customers.givenname,
+
+        -- Customer-level aggregations
+
+        min(orders.order_date) over(
+            partition by orders.customer_id
+        ) as first_order_date,
+
+        min(valid_order_date) over(
+            partition by orders.customer_id
+        ) as first_non_returned_order_date,
+
+        max(valid_order_date) over(
+            partition by orders.customer_id
+        ) as most_recent_non_returned_order_date,
+
+        count(*) over(
+            partition by orders.customer_id
+        ) as order_count,
+
+        sum(nvl2(orders.valid_order_date, 1, 0)) over(
+            partition by orders.customer_id
+        ) as non_returned_order_count,
+
+        sum(
+            nvl2(
+                orders.valid_order_date,
+                orders.order_value_dollars,
+                0
+            )
+        ) over(
+            partition by orders.customer_id
+        ) as total_lifetime_value,
+
+        sum(
+            nvl2(
+                orders.valid_order_date,
+                orders.order_value_dollars,
+                0
+            )
+        )
+        / sum(nvl2(orders.valid_order_date, 1, 0)) as avg_non_returned_order_value,
+
+        array_agg(distinct orders.order_id) over(
+            partition by orders.customer_id
+        ) as order_ids
+
+    from orders
+
+    inner join customers
+        using (customer_id)
+
+)
+
+--
+
+customer_order_history as (
+
+    select
+        -- customers.customer_id,
+        -- customers.full_name,
+        -- customers.surname,
+        -- customers.givenname,
 
         min(orders.order_date) as first_order_date,
 
