@@ -60,7 +60,8 @@ customer_order_history as (
         customers.full_name,
         customers.surname,
         customers.givenname,
-        min(order_date) as first_order_date,
+
+        min(orders.order_date) as first_order_date,
 
         min(case
             when orders.order_status not in ('returned','return_pending')
@@ -72,7 +73,7 @@ customer_order_history as (
             then order_date
         end) as most_recent_non_returned_order_date,
 
-        coalesce(max(user_order_seq),0) as order_count,
+        coalesce(max(orders.user_order_seq),0) as order_count,
 
         coalesce(count(case
             when orders.order_status != 'returned'
