@@ -14,7 +14,7 @@ base_customers as (
 
 ),
 
-payments as (
+base_payments as (
 
   select * from {{ source('stripe', 'payment') }}
 
@@ -52,6 +52,18 @@ orders as (
 
 ),
 
+payments as (
+
+  select
+    id as payment_id,
+    orderid as order_id,
+    status as payment_status,
+    round(amount / 100.0, 2) as payment_amount
+
+  from base_payments
+
+),
+
 -- Marts
 
 customer_order_history as (
@@ -82,13 +94,13 @@ customer_order_history as (
 
     sum(case
       when orders.order_status not in ('returned','return_pending')
-      then ROUND(c.amount/100.0,2)
+      then payments.payment_amount
       else 0
     end) as total_lifetime_value,
 
     sum(case
       when orders.order_status not in ('returned','return_pending')
-      then ROUND(c.amount/100.0,2)
+      then payments.payment_amount
       else 0
     end)
     / nullif(count(case
@@ -103,10 +115,10 @@ customer_order_history as (
   join customers
   on orders.customer_id = customers.customer_id
 
-  left outer join payments c
-  on orders.order_id = c.orderid
+  left outer join payments
+  on orders.order_id = payments.order_id
 
-  where orders.order_status not in ('pending') and c.status != 'fail'
+  where orders.order_status not in ('pending') and payments.payment_status != 'fail'
 
   group by customers.customer_id, customers.full_name, customers.surname, customers.givenname
 
@@ -124,9 +136,9 @@ final as (
     first_order_date,
     order_count,
     total_lifetime_value,
-    round(amount/100.0,2) as order_value_dollars,
+    payments.payment_amount as order_value_dollars,
     orders.order_status,
-    payments.status as payment_status
+    payments.payment_status
 
   from orders
 
@@ -137,9 +149,9 @@ final as (
   on orders.customer_id = customer_order_history.customer_id
 
   left outer join payments
-  on orders.order_id = payments.orderid
+  on orders.order_id = payments.order_id
 
-  where payments.status != 'fail'
+  where payments.payment_status != 'fail'
 
 )
 
