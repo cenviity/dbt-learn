@@ -22,48 +22,6 @@ base_payments as (
 
 -- Logical CTEs
 
--- Staging
-
-customers as (
-
-  select
-    id as customer_id,
-    last_name as surname,
-    first_name as givenname,
-    first_name || ' ' || last_name as full_name
-
-  from base_customers
-
-),
-
-orders as (
-
-  select
-    id as order_id,
-    user_id as customer_id,
-    order_date,
-    status as order_status,
-    row_number() over (
-      partition by user_id
-      order by order_date, id
-    ) as user_order_seq
-
-  from base_orders
-
-),
-
-payments as (
-
-  select
-    id as payment_id,
-    orderid as order_id,
-    status as payment_status,
-    round(amount / 100.0, 2) as payment_amount
-
-  from base_payments
-
-),
-
 -- Marts
 
 customer_order_history as (
