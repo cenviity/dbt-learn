@@ -1,7 +1,5 @@
 with
 
--- Import CTEs
-
 orders as (
 
     select * from {{ ref('stg_jaffle_shop__orders') }}
@@ -19,10 +17,6 @@ payments as (
     select * from {{ ref('stg_stripe__payments') }}
 
 ),
-
--- Logical CTEs
-
--- Marts
 
 customer_order_history as (
 
@@ -82,8 +76,6 @@ customer_order_history as (
 
 ),
 
--- Final CTE
-
 final as (
 
     select
@@ -112,7 +104,5 @@ final as (
     where payments.payment_status != 'fail'
 
 )
-
--- Simple `select` statement
 
 select * from final
