@@ -103,9 +103,6 @@ customer_order_history as (
     join customers
     on orders.customer_id = customers.customer_id
 
-    left outer join payments
-    on orders.order_id = payments.order_id
-
     where orders.order_status not in ('pending')
 
     group by customers.customer_id, customers.full_name, customers.surname, customers.givenname
@@ -122,9 +119,9 @@ final as (
         first_order_date,
         order_count,
         total_lifetime_value,
-        payments.payment_amount as order_value_dollars,
+        orders.order_value_dollars,
         orders.order_status,
-        payments.payment_status
+        orders.payment_status
 
     from orders
 
@@ -133,9 +130,6 @@ final as (
 
     join customer_order_history
     on orders.customer_id = customer_order_history.customer_id
-
-    left outer join payments
-    on orders.order_id = payments.order_id
 
 )
 
