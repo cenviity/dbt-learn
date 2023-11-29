@@ -63,36 +63,30 @@ customer_order_history as (
 
         min(orders.order_date) as first_order_date,
 
-        min(case
-            when orders.order_status not in ('returned','return_pending')
-            then order_date
-        end) as first_non_returned_order_date,
+        min(valid_order_date) as first_non_returned_order_date,
 
-        max(case
-            when orders.order_status not in ('returned','return_pending')
-            then order_date
-        end) as most_recent_non_returned_order_date,
+        max(valid_order_date) as most_recent_non_returned_order_date,
 
         coalesce(max(orders.user_order_seq),0) as order_count,
 
         coalesce(count(case
-            when orders.order_status != 'returned'
+            when orders.valid_order_date is not null
             then 1
         end),0) as non_returned_order_count,
 
         sum(case
-            when orders.order_status not in ('returned','return_pending')
-            then payments.payment_amount
+            when orders.valid_order_date is not null
+            then orders.order_value_dollars
             else 0
         end) as total_lifetime_value,
 
         sum(case
-            when orders.order_status not in ('returned','return_pending')
-            then payments.payment_amount
+            when orders.valid_order_date is not null
+            then orders.order_value_dollars
             else 0
         end)
         / nullif(count(case
-            when orders.order_status not in ('returned','return_pending')
+            when orders.valid_order_date is not null
             then 1
         end),0) as avg_non_returned_order_value,
 
