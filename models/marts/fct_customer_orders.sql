@@ -1,3 +1,31 @@
+with
+
+-- Import CTEs
+
+orders as (
+
+  select * from {{ source('jaffle_shop', 'orders') }}
+
+),
+
+customers as (
+
+  select * from {{ source('jaffle_shop', 'customers') }}
+
+),
+
+payments as (
+
+  select * from {{ source('stripe', 'payment') }}
+
+),
+
+-- Logical CTEs
+
+-- Final CTE
+
+-- Simple `select` statement
+
 select
 
     orders.id as order_id,
@@ -11,7 +39,7 @@ select
     orders.status as order_status,
     payments.status as payment_status
 
-from {{ source('jaffle_shop', 'orders') }} as orders
+from orders
 
 join (
 
@@ -20,7 +48,7 @@ join (
         first_name || ' ' || last_name as name,
         *
 
-      from {{ source('jaffle_shop', 'customers') }}
+      from customers
 
 ) customers
 on orders.user_id = customers.id
@@ -80,7 +108,7 @@ join (
         ) as user_order_seq,
         *
 
-      from {{ source('jaffle_shop', 'orders') }}
+      from orders
 
     ) a
 
@@ -91,12 +119,12 @@ join (
         first_name || ' ' || last_name as name,
         *
 
-      from {{ source('jaffle_shop', 'customers') }}
+      from customers
 
     ) b
     on a.user_id = b.id
 
-    left outer join {{ source('stripe', 'payment') }} c
+    left outer join payments c
     on a.id = c.orderid
 
     where a.status not in ('pending') and c.status != 'fail'
@@ -106,7 +134,7 @@ join (
 ) customer_order_history
 on orders.user_id = customer_order_history.customer_id
 
-left outer join {{ source('stripe', 'payment') }} payments
+left outer join payments
 on orders.id = payments.orderid
 
 where payments.status != 'fail'
