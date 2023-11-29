@@ -3,5 +3,6 @@
 target/
 dbt_packages/
 logs/
+/package-lock.yml
 
 .venv
