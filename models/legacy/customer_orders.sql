@@ -1,4 +1,4 @@
-select 
+select
     orders.id as order_id,
     orders.user_id as customer_id,
     last_name as surname,
@@ -12,16 +12,16 @@ select
 from raw.jaffle_shop.orders as orders
 
 join (
-      select 
-        first_name || ' ' || last_name as name, 
-        * 
+      select
+        first_name || ' ' || last_name as name,
+        *
       from raw.jaffle_shop.customers
 ) customers
 on orders.user_id = customers.id
 
 join (
 
-    select 
+    select
         b.id as customer_id,
         b.name as full_name,
         b.last_name as surname,
@@ -36,16 +36,16 @@ join (
         array_agg(distinct a.id) as order_ids
 
     from (
-      select 
+      select
         row_number() over (partition by user_id order by order_date, id) as user_order_seq,
         *
       from raw.jaffle_shop.orders
     ) a
 
-    join ( 
-      select 
-        first_name || ' ' || last_name as name, 
-        * 
+    join (
+      select
+        first_name || ' ' || last_name as name,
+        *
       from raw.jaffle_shop.customers
     ) b
     on a.user_id = b.id
