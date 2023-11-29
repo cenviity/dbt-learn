@@ -27,8 +27,10 @@ payments as (
 customers as (
 
   select
-    first_name || ' ' || last_name as name,
-    *
+    id as customer_id,
+    last_name as surname,
+    first_name as givenname,
+    first_name || ' ' || last_name as full_name
 
   from base_customers
 
@@ -52,10 +54,10 @@ a as (
 customer_order_history as (
 
   select
-    customers.id as customer_id,
-    customers.name as full_name,
-    customers.last_name as surname,
-    customers.first_name as givenname,
+    customers.customer_id,
+    customers.full_name,
+    customers.surname,
+    customers.givenname,
     min(order_date) as first_order_date,
 
     min(case
@@ -96,14 +98,14 @@ customer_order_history as (
   from a
 
   join customers
-  on a.user_id = customers.id
+  on a.user_id = customers.customer_id
 
   left outer join payments c
   on a.id = c.orderid
 
   where a.status not in ('pending') and c.status != 'fail'
 
-  group by customers.id, customers.name, customers.last_name, customers.first_name
+  group by customers.customer_id, customers.full_name, customers.surname, customers.givenname
 
 ),
 
@@ -114,8 +116,8 @@ final as (
   select
     orders.id as order_id,
     orders.user_id as customer_id,
-    last_name as surname,
-    first_name as givenname,
+    customers.surname,
+    customers.givenname,
     first_order_date,
     order_count,
     total_lifetime_value,
@@ -126,7 +128,7 @@ final as (
   from orders
 
   join customers
-  on orders.user_id = customers.id
+  on orders.user_id = customers.customer_id
 
   join customer_order_history
   on orders.user_id = customer_order_history.customer_id
