@@ -22,6 +22,8 @@ payments as (
 
 -- Logical CTEs
 
+-- Staging
+
 customers as (
 
   select
@@ -54,6 +56,8 @@ b as (
   from base_customers
 
 ),
+
+-- Marts
 
 customer_order_history as (
 
