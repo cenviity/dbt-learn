@@ -47,25 +47,15 @@ a as (
 
 ),
 
-b as (
-
-  select
-    first_name || ' ' || last_name as name,
-    *
-
-  from base_customers
-
-),
-
 -- Marts
 
 customer_order_history as (
 
   select
-    b.id as customer_id,
-    b.name as full_name,
-    b.last_name as surname,
-    b.first_name as givenname,
+    customers.id as customer_id,
+    customers.name as full_name,
+    customers.last_name as surname,
+    customers.first_name as givenname,
     min(order_date) as first_order_date,
 
     min(case
@@ -105,15 +95,15 @@ customer_order_history as (
 
   from a
 
-  join b
-  on a.user_id = b.id
+  join customers
+  on a.user_id = customers.id
 
   left outer join payments c
   on a.id = c.orderid
 
   where a.status not in ('pending') and c.status != 'fail'
 
-  group by b.id, b.name, b.last_name, b.first_name
+  group by customers.id, customers.name, customers.last_name, customers.first_name
 
 ),
 
