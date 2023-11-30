@@ -97,8 +97,8 @@ final as (
 
         from paid_orders
 
-        order by order_id
-
 )
 
 select * from final
+
+order by order_id
