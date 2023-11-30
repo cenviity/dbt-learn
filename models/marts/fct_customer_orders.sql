@@ -27,7 +27,7 @@ p as (
 
     from payments
 
-    where status <> 'fail'
+    where status != 'fail'
 
     group by 1
 
