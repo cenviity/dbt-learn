@@ -95,7 +95,7 @@ final as (
         -- Customer lifetime value
         sum(total_amount_paid) over (
             partition by customer_id
-            order by order_id
+            order by order_placed_at
         ) as customer_lifetime_value,
 
         -- First day of sale
