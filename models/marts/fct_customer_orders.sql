@@ -90,30 +90,36 @@ x as (
 
 ),
 
-select
-    p.*,
+final as (
 
-    row_number() over (order by p.order_id) as transaction_seq,
+    select
+        p.*,
 
-    row_number() over (
-        partition by customer_id
-        order by p.order_id
-    ) as customer_sales_seq,
+        row_number() over (order by p.order_id) as transaction_seq,
 
-    case when c.first_order_date = p.order_placed_at
-        then 'new'
-        else 'return'
-    end as nvsr,
+        row_number() over (
+            partition by customer_id
+            order by p.order_id
+        ) as customer_sales_seq,
 
-    x.clv_bad as customer_lifetime_value,
-    c.first_order_date as fdos
+        case when c.first_order_date = p.order_placed_at
+            then 'new'
+            else 'return'
+        end as nvsr,
 
-    from paid_orders p
+        x.clv_bad as customer_lifetime_value,
+        c.first_order_date as fdos
 
-    left join customer_orders as c
-        using (customer_id)
+        from paid_orders p
 
-    left outer join x
-        on x.order_id = p.order_id
+        left join customer_orders as c
+            using (customer_id)
 
-    order by order_id
+        left outer join x
+            on x.order_id = p.order_id
+
+        order by order_id
+
+)
+
+select * from final
