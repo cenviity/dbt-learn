@@ -115,7 +115,7 @@ final as (
         left join customer_orders as c
             using (customer_id)
 
-        left outer join x
+        left join x
             on x.order_id = p.order_id
 
         order by order_id
