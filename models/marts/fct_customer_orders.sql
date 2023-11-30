@@ -1,52 +1,52 @@
-WITH
+with
 
 paid_orders as (
 
     select
-        Orders.ID as order_id,
-        Orders.USER_ID as customer_id,
-        Orders.ORDER_DATE AS order_placed_at,
-        Orders.STATUS AS order_status,
+        orders.id as order_id,
+        orders.user_id as customer_id,
+        orders.order_date AS order_placed_at,
+        orders.status AS order_status,
         p.total_amount_paid,
         p.payment_finalized_date,
-        C.FIRST_NAME as customer_first_name,
-        C.LAST_NAME as customer_last_name
+        c.first_name as customer_first_name,
+        c.last_name as customer_last_name
 
-    FROM {{ source('jaffle_shop', 'orders') }} as Orders
+    FROM {{ source('jaffle_shop', 'orders') }} as orders
 
     left join (
 
         select
-            ORDERID as order_id,
-            max(CREATED) as payment_finalized_date,
-            sum(AMOUNT) / 100.0 as total_amount_paid
+            orderid as order_id,
+            max(created) as payment_finalized_date,
+            sum(amount) / 100.0 as total_amount_paid
 
         from {{ source('stripe', 'payment') }}
 
-        where STATUS <> 'fail'
+        where status <> 'fail'
 
         group by 1
 
     ) p
-        ON orders.ID = p.order_id
+        ON orders.id = p.order_id
 
-    left join {{ source('jaffle_shop', 'customers') }} C
-        on orders.USER_ID = C.ID
+    left join {{ source('jaffle_shop', 'customers') }} c
+        on orders.user_id = c.id
 
 ),
 
 customer_orders as (
 
     select
-        C.ID as customer_id
-        , min(ORDER_DATE) as first_order_date
-        , max(ORDER_DATE) as most_recent_order_date
-        , count(ORDERS.ID) AS number_of_orders
+        c.id as customer_id
+        , min(order_date) as first_order_date
+        , max(order_date) as most_recent_order_date
+        , count(orders.id) AS number_of_orders
 
-    from {{ source('jaffle_shop', 'customers') }} C
+    from {{ source('jaffle_shop', 'customers') }} c
 
-    left join {{ source('jaffle_shop', 'orders') }} as Orders
-        on orders.USER_ID = C.ID
+    left join {{ source('jaffle_shop', 'orders') }} as orders
+        on orders.user_id = c.id
 
     group by 1
 
@@ -55,27 +55,27 @@ customer_orders as (
 select
     p.*,
 
-    ROW_NUMBER() OVER (ORDER BY p.order_id) as transaction_seq,
+    row_number() over (order by p.order_id) as transaction_seq,
 
-    ROW_NUMBER() OVER (
-        PARTITION BY customer_id
-        ORDER BY p.order_id
+    row_number() over (
+        partition by customer_id
+        order by p.order_id
     ) as customer_sales_seq,
 
-    CASE WHEN c.first_order_date = p.order_placed_at
-        THEN 'new'
-        ELSE 'return'
-    END as nvsr,
+    case when c.first_order_date = p.order_placed_at
+        then 'new'
+        else 'return'
+    end as nvsr,
 
     x.clv_bad as customer_lifetime_value,
     c.first_order_date as fdos
 
-    FROM paid_orders p
+    from paid_orders p
 
     left join customer_orders as c
-        USING (customer_id)
+        using (customer_id)
 
-    LEFT OUTER JOIN (
+    left outer join (
 
         select
             p.order_id,
@@ -94,4 +94,4 @@ select
     ) x
         on x.order_id = p.order_id
 
-    ORDER BY order_id
+    order by order_id
