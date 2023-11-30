@@ -86,7 +86,7 @@ x as (
 
     from paid_orders p
 
-    order by p.order_id
+    order by 1
 
 ),
 
