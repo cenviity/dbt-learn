@@ -18,16 +18,13 @@ final as (
         customer_first_name,
         customer_last_name,
 
-        -- Sales transaction sequence
         row_number() over (order by order_id) as transaction_seq,
 
-        -- Customer sales sequence
         row_number() over (
             partition by customer_id
             order by order_id
         ) as customer_sales_seq,
 
-        -- New vs returning customer
         case when (
             rank() over (
                 partition by customer_id
@@ -38,13 +35,11 @@ final as (
             else 'return'
         end as nvsr,
 
-        -- Customer lifetime value
         sum(total_amount_paid) over (
             partition by customer_id
             order by order_placed_at
         ) as customer_lifetime_value,
 
-        -- First day of sale
         first_value(order_placed_at) over (
             partition by customer_id
             order by order_placed_at
