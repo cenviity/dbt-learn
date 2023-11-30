@@ -118,7 +118,7 @@ final as (
             using (customer_id)
 
         left join add_customer_lifetime_value
-            on add_customer_lifetime_value.order_id = paid_orders.order_id
+            using (order_id)
 
         order by order_id
 
