@@ -22,6 +22,7 @@ p as (
 
     select
         orderid as order_id,
+
         max(created) as payment_finalized_date,
         sum(amount) / 100.0 as total_amount_paid
 
@@ -59,6 +60,7 @@ customer_orders as (
 
     select
         c.id as customer_id,
+
         min(order_date) as first_order_date,
         max(order_date) as most_recent_order_date,
         count(orders.id) AS number_of_orders
@@ -76,6 +78,7 @@ x as (
 
     select
         p.order_id,
+
         sum(t2.total_amount_paid) as clv_bad
 
     from paid_orders p
