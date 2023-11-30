@@ -58,22 +58,6 @@ paid_orders as (
 
 ),
 
-add_customer_lifetime_value as (
-
-    select
-        paid_orders.order_id,
-
-        sum(paid_orders.total_amount_paid) over (
-            partition by paid_orders.customer_id
-            order by order_id
-        ) as customer_lifetime_value
-
-    from paid_orders
-
-    order by 1
-
-),
-
 final as (
 
     select
@@ -97,7 +81,10 @@ final as (
             else 'return'
         end as nvsr,
 
-        add_customer_lifetime_value.customer_lifetime_value,
+        sum(paid_orders.total_amount_paid) over (
+            partition by paid_orders.customer_id
+            order by order_id
+        ) as customer_lifetime_value,
 
         first_value(paid_orders.order_placed_at) over (
             partition by paid_orders.customer_id
@@ -105,9 +92,6 @@ final as (
         ) as fdos
 
         from paid_orders
-
-        left join add_customer_lifetime_value
-            using (order_id)
 
         order by order_id
 
