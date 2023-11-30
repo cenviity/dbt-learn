@@ -3,5 +3,7 @@ version: 2
 sources:
   - name: stripe
     database: analytics
+    schema: dbt_vyim
     tables:
       - name: payment
+        identifier: payments
