@@ -58,24 +58,6 @@ paid_orders as (
 
 ),
 
-customer_orders as (
-
-    select
-        customers.id as customer_id,
-
-        min(orders.order_date) as first_order_date,
-        max(orders.order_date) as most_recent_order_date,
-        count(orders.id) as number_of_orders
-
-    from customers
-
-    left join orders
-        on orders.user_id = customers.id
-
-    group by 1
-
-),
-
 add_customer_lifetime_value as (
 
     select
@@ -104,18 +86,25 @@ final as (
             order by paid_orders.order_id
         ) as customer_sales_seq,
 
-        case when customer_orders.first_order_date = paid_orders.order_placed_at
+        -- New vs returning customer
+        case when (
+            rank() over (
+                partition by paid_orders.customer_id
+                order by paid_orders.order_placed_at, paid_orders.order_id
+            ) = 1
+        )
             then 'new'
             else 'return'
         end as nvsr,
 
         add_customer_lifetime_value.customer_lifetime_value,
-        customer_orders.first_order_date as fdos
+
+        first_value(paid_orders.order_placed_at) over (
+            partition by paid_orders.customer_id
+            order by paid_orders.order_placed_at
+        ) as fdos
 
         from paid_orders
-
-        left join customer_orders
-            using (customer_id)
 
         left join add_customer_lifetime_value
             using (order_id)
