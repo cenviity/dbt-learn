@@ -18,11 +18,13 @@ final as (
         customer_first_name,
         customer_last_name,
 
-        row_number() over (order by order_id) as transaction_seq,
+        row_number() over (
+            order by order_placed_at, order_id
+        ) as transaction_seq,
 
         row_number() over (
             partition by customer_id
-            order by order_id
+            order by order_placed_at, order_id
         ) as customer_sales_seq,
 
         case when (
@@ -37,12 +39,12 @@ final as (
 
         sum(total_amount_paid) over (
             partition by customer_id
-            order by order_placed_at
+            order by order_placed_at, order_id
         ) as customer_lifetime_value,
 
         first_value(order_placed_at) over (
             partition by customer_id
-            order by order_placed_at
+            order by order_placed_at, order_id
         ) as fdos
 
         from paid_orders
