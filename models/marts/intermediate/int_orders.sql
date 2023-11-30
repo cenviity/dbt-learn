@@ -1,11 +1,5 @@
 with
 
-customers as (
-
-    select * from {{ ref('stg_jaffle_shop__customers') }}
-
-),
-
 orders as (
 
     select * from {{ ref('stg_jaffle_shop__orders') }}
@@ -43,18 +37,12 @@ paid_orders as (
         orders.order_status,
 
         completed_payments.total_amount_paid,
-        completed_payments.payment_finalized_date,
+        completed_payments.payment_finalized_date
 
-        customers.customer_first_name,
-        customers.customer_last_name
-
-    FROM orders
+    from orders
 
     left join completed_payments
         using (order_id)
-
-    left join customers
-        using (customer_id)
 
 )
 

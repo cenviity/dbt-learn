@@ -1,5 +1,11 @@
 with
 
+customers as (
+
+    select * from {{ ref('stg_jaffle_shop__customers') }}
+
+),
+
 paid_orders as (
 
     select * from {{ ref('int_orders') }}
@@ -9,14 +15,15 @@ paid_orders as (
 final as (
 
     select
-        order_id,
-        customer_id,
-        order_placed_at,
-        order_status,
-        total_amount_paid,
-        payment_finalized_date,
-        customer_first_name,
-        customer_last_name,
+        paid_orders.order_id,
+        paid_orders.customer_id,
+        paid_orders.order_placed_at,
+        paid_orders.order_status,
+        paid_orders.total_amount_paid,
+        paid_orders.payment_finalized_date,
+
+        customers.customer_first_name,
+        customers.customer_last_name,
 
         row_number() over (
             order by order_placed_at, order_id
@@ -47,7 +54,10 @@ final as (
             order by order_placed_at, order_id
         ) as fdos
 
-        from paid_orders
+    from paid_orders
+
+    left join customers
+        using (customer_id)
 
 )
 
