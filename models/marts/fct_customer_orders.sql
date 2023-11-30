@@ -6,7 +6,7 @@ orders as (
 
 ),
 
-base_payments as (
+payments as (
 
     select * from {{ ref('stg_stripe__payments') }}
 
@@ -20,7 +20,7 @@ customers as (
 
 ),
 
-payments as (
+completed_payments as (
 
     select
         order_id,
@@ -28,7 +28,7 @@ payments as (
         max(payment_created_at) as payment_finalized_date,
         sum(payment_amount) as total_amount_paid
 
-    from base_payments
+    from payments
 
     group by 1
 
@@ -42,15 +42,15 @@ paid_orders as (
         orders.order_placed_at,
         orders.order_status,
 
-        payments.total_amount_paid,
-        payments.payment_finalized_date,
+        completed_payments.total_amount_paid,
+        completed_payments.payment_finalized_date,
 
         customers.customer_first_name,
         customers.customer_last_name
 
     FROM orders
 
-    left join payments
+    left join completed_payments
         using (order_id)
 
     left join customers
