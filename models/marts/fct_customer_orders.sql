@@ -65,10 +65,8 @@ final as (
         customer_id,
         order_placed_at,
         order_status,
-
         total_amount_paid,
         payment_finalized_date,
-
         customer_first_name,
         customer_last_name,
 
