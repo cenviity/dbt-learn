@@ -39,8 +39,8 @@ paid_orders as (
     select
         orders.id as order_id,
         orders.user_id as customer_id,
-        orders.order_date AS order_placed_at,
-        orders.status AS order_status,
+        orders.order_date as order_placed_at,
+        orders.status as order_status,
         p.total_amount_paid,
         p.payment_finalized_date,
         c.first_name as customer_first_name,
@@ -63,7 +63,7 @@ customer_orders as (
 
         min(order_date) as first_order_date,
         max(order_date) as most_recent_order_date,
-        count(orders.id) AS number_of_orders
+        count(orders.id) as number_of_orders
 
     from customers as c
 
