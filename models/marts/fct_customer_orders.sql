@@ -10,8 +10,6 @@ payments as (
 
     select * from {{ ref('stg_stripe__payments') }}
 
-    where payment_status != 'fail'
-
 ),
 
 customers as (
@@ -29,6 +27,8 @@ completed_payments as (
         sum(payment_amount) as total_amount_paid
 
     from payments
+
+    where payment_status != 'fail'
 
     group by 1
 
