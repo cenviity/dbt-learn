@@ -51,10 +51,10 @@ paid_orders as (
     FROM orders
 
     left join payments
-        ON orders.order_id = payments.order_id
+        using (order_id)
 
     left join customers
-        on orders.customer_id = customers.customer_id
+        using (customer_id)
 
 ),
 
