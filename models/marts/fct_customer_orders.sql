@@ -10,6 +10,8 @@ base_payments as (
 
     select * from {{ source('stripe', 'payment') }}
 
+    where status != 'fail'
+
 ),
 
 customers as (
@@ -27,8 +29,6 @@ payments as (
         sum(amount) / 100.0 as total_amount_paid
 
     from base_payments
-
-    where status != 'fail'
 
     group by 1
 
