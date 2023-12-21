@@ -21,6 +21,9 @@ models:
     - name: customer_id
       tests:
         - not_null
+    - name: amount
+      tests:
+        - assert_column_is_greater_than_five
   - name: orders_by_customer_9
     description: Number of orders placed by each customer
     columns:
