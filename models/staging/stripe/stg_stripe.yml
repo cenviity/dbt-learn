@@ -7,7 +7,11 @@ models:
       - name: payment_id
         description: Primary key for payments.
         tests:
-          - unique
+          - unique:
+              config:
+                severity: error
+                error_if: ">100"
+                warn_if: ">10"
           - not_null
       - name: order_id
         description: Foreign key to `stg_orders.order_id`.
@@ -24,6 +28,8 @@ models:
                 - coupon
                 - bank_transfer
                 - gift_card
+              config:
+                where: "status = 'success'"
       - name: status
         description: Whether the payment is successful.
         tests:
@@ -31,3 +37,6 @@ models:
               values:
                 - success
                 - fail
+              config:
+                limit: 10
+                store_failures: true
