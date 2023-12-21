@@ -29,9 +29,7 @@ models:
         - not_null
         - unique:
             config:
-              severity: warn
-              error_if: ">100"
-              warn_if: ">30"
+              where: "order_date > '2018-03-01'"
     - name: amount
       tests:
         - dbt_expectations.expect_column_values_to_be_between:
