@@ -21,3 +21,10 @@ models:
     - name: customer_id
       tests:
         - not_null
+  - name: orders_by_customer_9
+    description: Number of orders placed by each customer
+    columns:
+    - name: customer_id
+      tests:
+        - unique
+        - not_null
