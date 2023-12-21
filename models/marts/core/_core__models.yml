@@ -30,6 +30,8 @@ models:
         - unique:
             config:
               severity: warn
+              error_if: ">100"
+              warn_if: ">30"
     - name: amount
       tests:
         - dbt_expectations.expect_column_values_to_be_between:
