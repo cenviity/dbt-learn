@@ -29,7 +29,7 @@ models:
         - not_null
         - unique:
             config:
-              where: "order_date > '2018-03-01'"
+              limit: 10
     - name: amount
       tests:
         - dbt_expectations.expect_column_values_to_be_between:
