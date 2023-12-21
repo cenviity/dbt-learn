@@ -29,6 +29,10 @@ models:
         - assert_column_is_greater_than_five
         - average_dollars_spent_greater_than_one:
             group_by_column: order_id
+        - dbt_expectations.expect_column_values_to_be_between:
+            min_value: 5
+            row_condition: "order_id is not null"
+            strictly: True
   - name: orders_by_customer_9
     description: Number of orders placed by each customer
     columns:
