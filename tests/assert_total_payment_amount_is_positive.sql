@@ -1,7 +1,9 @@
 select
     order_id,
-    amount
+    sum(amount) as total_amount
 
 from {{ ref('fct_orders') }}
 
-where amount <= 0
+group by 1
+
+having total_amount < 0
