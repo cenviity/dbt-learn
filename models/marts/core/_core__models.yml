@@ -24,6 +24,8 @@ models:
     - name: amount
       tests:
         - assert_column_is_greater_than_five
+        - average_dollars_spent_greater_than_one:
+            group_by_column: order_id
   - name: orders_by_customer_9
     description: Number of orders placed by each customer
     columns:
