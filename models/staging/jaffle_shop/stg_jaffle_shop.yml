@@ -24,6 +24,9 @@ models:
           - relationships:
               to: ref('stg_customers')
               field: customer_id
+          # This test should fail.
+          # Use `dbt test -s stg_orders --store-failures` to find results.
+          - unique
       - name: status
         description: '{{ doc("order_status") }}'
         tests:
