@@ -11,6 +11,9 @@ models:
             to: ref('stg_customers')
             field: customer_id
   - name: fct_orders
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "amount > 5"
     columns:
     - name: order_id
       tests:
