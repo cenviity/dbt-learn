@@ -40,6 +40,9 @@ models:
     # All models should have `unique` and `not_null`
     +required_tests: {"unique.*|not_null": 2}
     marts:
+      # Marts should have `unique` and `not_null` (inherited from above)
+      # Plus an additional test for relationships
+      +required_tests: {"relationship.*": 1}
       core:
         +materialized: table
     staging:
